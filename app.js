@@ -3,11 +3,13 @@ const app = express();
 const mongoose = require("mongoose");
 const Listing = require("./models/listing");
 const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
-const path = require("path")
+const path = require("path");
+const { send } = require("process");
 
 app.set("views",path.join(__dirname,"views"));
 app.set("view engine", "ejs");
-app.set(express.urlencoded({extended:true}));
+app.use(express.urlencoded({extended:true}));
+// app.use(express.json())
 
 main()
   .then(() => console.log("Connected to database"))
@@ -21,9 +23,18 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
+
+//Index route
 app.get("/listings", async (req, res) => {   
     const allListings = await Listing.find({});
-    res.render("listings", {allListings }); 
+    res.render("listings/index", {allListings }); 
+});
+
+// show route 
+app.get("/listings/:id", async(req,res)=>{
+  let{id} = req.params;
+  const listing = await Listing.findById(id);
+  res.render("listings/show" , {listing});
 });
 
 // app.get("/testlisting", async (req, res) => {
