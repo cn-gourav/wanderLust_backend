@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const Listing = require("./models/listing");
 const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
 const path = require("path");
-const { send } = require("process");
+const { send, title } = require("process");
 
 app.set("views",path.join(__dirname,"views"));
 app.set("view engine", "ejs");
@@ -42,6 +42,14 @@ app.get("/listings/:id", async(req,res)=>{
   res.render("listings/show.ejs" , {listing});
 });
 
+// Create Route 
+app.post("/listings",async(req,res)=>{
+  // let {title,description,image,price,location,country} = req.body
+  let listing = req.body.listing;
+  const newListing = new Listing(listing);
+  await newListing.save();
+  res.redirect("/listings")
+})
 // app.get("/testlisting", async (req, res) => {
 //   let sampleListing = new Listing({
 //     title: "t2est",
