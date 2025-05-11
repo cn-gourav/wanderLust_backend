@@ -5,11 +5,13 @@ const Listing = require("./models/listing");
 const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
 const path = require("path");
 const { send, title } = require("process");
+const methodOverride = require('method-override');
 
 app.set("views",path.join(__dirname,"views"));
 app.set("view engine", "ejs");
 app.use(express.urlencoded({extended:true}));
 // app.use(express.json())
+app.use(methodOverride("_method"))
 
 main()
   .then(() => console.log("Connected to database"))
@@ -50,6 +52,22 @@ app.post("/listings",async(req,res)=>{
   await newListing.save();
   res.redirect("/listings")
 })
+
+//edit and update 
+app.get("/listings/:id/edit" ,async(req,res)=>{
+   let{id} = req.params;
+  const listing = await Listing.findById(id);
+  res.render("listings/edit" , {listing})
+})
+
+
+// update router
+app.put("/listings/:id" , async(req,res)=>{
+  let {id} = req.params;
+  await Listing.findByIdAndUpdate(id,{...req.body.listing});
+  res.redirect(`/listings/${id}`)
+})
+
 // app.get("/testlisting", async (req, res) => {
 //   let sampleListing = new Listing({
 //     title: "t2est",
