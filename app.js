@@ -4,14 +4,15 @@ const mongoose = require("mongoose");
 const Listing = require("./models/listing");
 const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
 const path = require("path");
-const methodOverride = require('method-override');
-const  ejsmate = 
+const methodOverride = require("method-override");
+const ejsmate = require("ejs-mate");
 
 app.set("views",path.join(__dirname,"views"));
 app.set("view engine", "ejs");
 app.use(express.urlencoded({extended:true}));
-// app.use(express.json())
 app.use(methodOverride("_method"))
+app.engine('ejs',ejsmate);
+app.use(express.static(path.join(__dirname,"/public"))) 
 
 main()
   .then(() => console.log("Connected to database"))
