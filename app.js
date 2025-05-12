@@ -4,8 +4,8 @@ const mongoose = require("mongoose");
 const Listing = require("./models/listing");
 const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
 const path = require("path");
-const { send, title } = require("process");
 const methodOverride = require('method-override');
+const  ejsmate = 
 
 app.set("views",path.join(__dirname,"views"));
 app.set("view engine", "ejs");
@@ -68,6 +68,13 @@ app.put("/listings/:id" , async(req,res)=>{
   res.redirect(`/listings/${id}`)
 })
 
+// delete route 
+app.delete("/listings/:id" , async(req,res)=>{
+  let {id} = req.params;
+  let deleting = await Listing.findByIdAndDelete(id);
+  res.redirect("/listings")
+})
+
 // app.get("/testlisting", async (req, res) => {
 //   let sampleListing = new Listing({
 //     title: "t2est",
@@ -82,7 +89,7 @@ app.put("/listings/:id" , async(req,res)=>{
 //     .then(() => {
 //       console.log("Listing saved");
 //       res.send("Listing saved");
-//     })
+//     }) 
 //     .catch((err) => {
 //       console.log(err);
 //     });
