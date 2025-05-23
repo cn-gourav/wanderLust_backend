@@ -16,8 +16,8 @@
                               required>
 
                          <!-- control-highlighter  -->
-                         <div class="vaild-feedback">
-                              Title look good
+                         <div class="invalid-feedback">
+                              Title is required
                          </div>
 
 
@@ -30,7 +30,9 @@
                          <textarea name="listing[description]" class="form-control" required></textarea>
 
                          <!-- control-text  -->
-                         <div class="vaild-feedback">Description is required</div>
+                         <div class="invalid-feedback">
+                              Description is required
+                         </div>
                     </div>
 
 
@@ -46,22 +48,27 @@
                     <div class="row">
                          <div class="mb-3 col-md-4">
                               <label for="price" class="form-label">Price</label>
-                              <input type="number" placeholder="enter price" class="form-control" name="listing[price]"
-                                   required>
+                              <input placeholder="enter price" class="form-control" name="listing[price]" required>
 
 
                               <!-- vaild-feedback  -->
-                              <div class="vaild-feedback">
+                              <div class="invalid-feedback">
                                    Price is required
                               </div>
                          </div>
 
 
                          <!-- label and input for country -->
-                         <div class="mb-3 col-md-8">
+                         <div class="mb-3 col-md-8 ">
                               <label for="country">Country</label>
                               <input type="text" placeholder="enter country" class="form-control"
                                    name="listing[countrys]" required>
+
+                              <!-- invalid-feedback -->
+                              <div class="invalid-feedback">
+                                   Country is required
+                              </div>
+
                          </div>
                     </div>
 
@@ -70,6 +77,11 @@
                          <label for="location" class="form-label">Location</label>
                          <input type="text" placeholder="enter location" class="form-control" name="listing[location]"
                               required>
+
+                         <!-- invalid-feedback  -->
+                         <div class="invalid-feedback">
+                              Location is required
+                         </div>
                     </div>
 
                     <br>

@@ -6,6 +6,7 @@ const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
 const path = require("path");
 const methodOverride = require("method-override");
 const ejsmate = require("ejs-mate");
+const wrapAsync = require("./utils/wrapAsync");
 const Review = require("./models/review");
 
 app.set("views",path.join(__dirname,"views"));
@@ -47,13 +48,14 @@ app.get("/listings/:id", async(req,res)=>{
 });
 
 // Create Route 
-app.post("/listings",async(req,res)=>{
+app.post("/listings",wrapAsync(async(req,res)=>{
   // let {title,description,image,price,location,country} = req.body
-  let listing = req.body.listing;
-  const newListing = new Listing(listing);
-  await newListing.save();
-  res.redirect("/listings")
-})
+
+    let listing = req.body.listing;
+    const newListing = new Listing(listing);
+    await newListing.save();
+    res.redirect("/listings")
+}));
 
 //edit and update 
 app.get("/listings/:id/edit" ,async(req,res)=>{
@@ -76,6 +78,12 @@ app.delete("/listings/:id" , async(req,res)=>{
   let deleting = await Listing.findByIdAndDelete(id);
   res.redirect("/listings")
 })
+
+
+// Error handle middleware 
+app.use((err,req,res,next)=>{
+  res.status(500).send("Something went wrong")
+});
 
 //review route
 app.post("/listings/:id/reviews" , async(req,res)=>{
