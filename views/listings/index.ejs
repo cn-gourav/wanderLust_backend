@@ -15,13 +15,15 @@
 
                               <div class="card-img-overlay"></div>
                               <div class="card-body">
-                                   <p class="card-text">
+                                   <div class="card-text">
                                         <b>
                                              <%= listings.title %>
                                         </b>
                                         <br>
-                                        &#8377 <%= listings.price.toLocaleString("en-IN") %> /night
-                                   </p>
+                                        <p>
+                                             <%= listings.description %>
+                                        </p>
+                                   </div>
                               </div>
                          </div>
                     </a>

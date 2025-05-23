@@ -4,37 +4,72 @@
           <div class="col-8 offset-2">
 
                <h1>Create a New Listing</h1>
-               <form action="/listings" method="POST">
+
+               <!-- form-section  -->
+
+               <form action="/listings" method="POST" novalidate class="needs-validation">
+
+                    <!-- labal and input tittle -->
                     <div class="mb-3">
                          <label for="title" class="form-label">Title</label>
-                         <input class="form-control" type="text" placeholder="enter title" name="listing[title]">
+                         <input class="form-control" type="text" placeholder="enter title" name="listing[title]"
+                              required>
+
+                         <!-- control-highlighter  -->
+                         <div class="vaild-feedback">
+                              Title look good
+                         </div>
+
+
                     </div>
 
+
+                    <!-- labal and input description  -->
                     <div class="mb-3">
                          <label for="description" class="form-label">Description</label>
-                         <textarea name="listing[description]" class="form-control"></textarea>
+                         <textarea name="listing[description]" class="form-control" required></textarea>
+
+                         <!-- control-text  -->
+                         <div class="vaild-feedback">Description is required</div>
                     </div>
 
+
+                    <!-- label input for image  -->
                     <div class="mb-3">
                          <label for="image" class="form-label">Image link</label>
                          <input class="form-control" type="text" placeholder="img url/link" name="listing[image]">
                     </div>
+
+
+
+                    <!-- label and input for price -->
                     <div class="row">
                          <div class="mb-3 col-md-4">
                               <label for="price" class="form-label">Price</label>
-                              <input type="text" placeholder="enter price" class="form-control" name="listing[price]">
+                              <input type="number" placeholder="enter price" class="form-control" name="listing[price]"
+                                   required>
+
+
+                              <!-- vaild-feedback  -->
+                              <div class="vaild-feedback">
+                                   Price is required
+                              </div>
                          </div>
 
+
+                         <!-- label and input for country -->
                          <div class="mb-3 col-md-8">
                               <label for="country">Country</label>
                               <input type="text" placeholder="enter country" class="form-control"
-                                   name="listing[countrys]">
+                                   name="listing[countrys]" required>
                          </div>
                     </div>
 
+                    <!-- label and input for location -->
                     <div class="mb-3">
                          <label for="location" class="form-label">Location</label>
-                         <input type="text" placeholder="enter location" class="form-control" name="listing[location]">
+                         <input type="text" placeholder="enter location" class="form-control" name="listing[location]"
+                              required>
                     </div>
 
                     <br>
