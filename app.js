@@ -1,3 +1,5 @@
+// Description: A simple Express application that connects to a MongoDB database,
+// provides routes for managing listings and reviews, and includes error handling.
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -10,7 +12,9 @@ const wrapAsync = require("./utils/wrapAsync");
 const ExpressError = require("./utils/ExpressError");
 const {listingSchema} = require("./schema.js");
 const Review = require("./models/review");
+const {reviewSchema} = require("./schema.js");
 
+// Middleware
 app.set("views",path.join(__dirname,"views"));
 app.set("view engine", "ejs");
 app.use(express.urlencoded({extended:true}));
@@ -18,6 +22,8 @@ app.use(methodOverride("_method"))
 app.engine('ejs',ejsmate);
 app.use(express.static(path.join(__dirname,"/public"))) 
 
+
+// Connect to MongoDB
 main()
   .then(() => console.log("Connected to database"))
   .catch((err) => console.log(err));
@@ -26,10 +32,14 @@ async function main() {
   await mongoose.connect(MONGO_URL);
 }
 
+
+// test router 
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
+
+// vaildateListing middleware 
 const vaildateListing = (req, res, next) => {
    let {error}=  listingSchema.validate(req.body); // Validate the listing data
   if(error){
@@ -40,7 +50,21 @@ const vaildateListing = (req, res, next) => {
   }
 }
 
+// vaildateReview middleware
+const vaildateReview = (req, res, next) => {
+  let {error} = reviewSchema.validate(req.body); // Validate the review data
+  if(error){
+    let errmsg = error.details.map((el) => el.message).join(", ");
+    throw new ExpressError(400, errmsg);
+  }else{
+    next();
+  }
+}
 
+
+
+
+// All Router here !! 
 
 //Index route
 app.get("/listings", wrapAsync( async (req, res) => {   
@@ -54,10 +78,13 @@ app.get("/listings/new",(req,res)=>{
 })
 
 // show route 
-app.get("/listings/:id",wrapAsync( async(req,res)=>{
-  let{id} = req.params;
-  const listing = await Listing.findById(id);
-  res.render("listings/show.ejs" , {listing});
+app.get("/listings/:id", wrapAsync(async(req,res)=>{
+  let {id} = req.params;
+  const listing = await Listing.findById(id).populate("reviews"); // Populate reviews for the listing
+  if (!listing) {
+    throw new ExpressError(404, "Listing not found");
+  }
+  res.render("listings/show.ejs", {listing});
 }));
 
 // Create Route 
@@ -96,6 +123,18 @@ app.delete("/listings/:id" , wrapAsync( async(req,res)=>{
 }))
 
 
+//review route
+// post route 
+app.post("/listings/:id/reviews",vaildateReview,
+  wrapAsync(async(req,res)=>{
+ let listing = await Listing.findById(req.params.id);
+ let newReview = new Review(req.body.review);
+ listing.reviews.push(newReview);
+ await newReview.save();
+ await listing.save();
+ res.redirect(`/listings/${listing._id}`); 
+}))
+
 // all routes check 
 app.all("*", (req, res, next) => {
   next(new ExpressError("Page Not Found", 404));
@@ -108,22 +147,6 @@ app.use((err, req, res, next) => {
   res.status(statusCode).render("error.ejs" , {err});
 });
 
-
-
-//review route
-// post route 
-app.post("/listings/:id/reviews" , async(req,res)=>{
- let listing = await Listing.findById(req.params.id) 
- let newReview = new Review(req.body.review);
- listing.reviews.push(newReview);
-
- await newReview.save();
- await listing.save();
-
- console.log("new review saved")
-//  res.send("Review saved")
- res.redirect(`/listings/${listing._id}`)
-})
 
 // app.get("/testlisting", async (req, res) => {
 //   let sampleListing = new Listing({
