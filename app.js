@@ -8,6 +8,7 @@ const methodOverride = require("method-override");
 const ejsmate = require("ejs-mate");
 const wrapAsync = require("./utils/wrapAsync");
 const ExpressError = require("./utils/ExpressError");
+const {listingSchema} = require("./schema.js");
 const Review = require("./models/review");
 
 app.set("views",path.join(__dirname,"views"));
@@ -29,6 +30,17 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
+const vaildateListing = (req, res, next) => {
+   let {error}=  listingSchema.validate(req.body); // Validate the listing data
+  if(error){
+    let errmsg = error.details.map((el) => el.message).join(", "); 
+    throw new ExpressError(400, errmsg); 
+  }else{
+    next();
+  }
+}
+
+
 
 //Index route
 app.get("/listings", wrapAsync( async (req, res) => {   
@@ -49,20 +61,8 @@ app.get("/listings/:id",wrapAsync( async(req,res)=>{
 }));
 
 // Create Route 
-app.post("/listings",wrapAsync(async(req,res)=>{
-  if(!req.body.listing){
-    throw new ExpressError(400,"Invalid Listing Data");
-  }
-
-  if(!req.body.listing.title){
-    throw new ExpressError(400,"Invalid Listing Data");
-  }
- if(!req.body.listing.location){
-    throw new ExpressError(400,"Invalid Listing Data");
-  }
-  if(!req.body.listing.country){
-    throw new ExpressError(400,"Invalid Listing Data");
-  }
+app.post("/listings",vaildateListing
+  ,wrapAsync(async(req,res)=>{
   let listing = req.body.listing;
   const newListing = new Listing(listing);
   await newListing.save();
@@ -78,7 +78,8 @@ app.get("/listings/:id/edit", wrapAsync(async(req,res)=>{
 
 
 // update router
-app.put("/listings/:id" , wrapAsync(async(req,res)=>{
+app.put("/listings/:id",vaildateListing
+   , wrapAsync(async(req,res)=>{
   if(!req.body.listing){
     throw new ExpressError(400,"Invalid Listing Data");
   }
@@ -110,6 +111,7 @@ app.use((err, req, res, next) => {
 
 
 //review route
+// post route 
 app.post("/listings/:id/reviews" , async(req,res)=>{
  let listing = await Listing.findById(req.params.id) 
  let newReview = new Review(req.body.review);
