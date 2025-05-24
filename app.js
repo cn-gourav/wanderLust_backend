@@ -50,17 +50,23 @@ app.get("/listings/:id",wrapAsync( async(req,res)=>{
 
 // Create Route 
 app.post("/listings",wrapAsync(async(req,res)=>{
-  // let {title,description,image,price,location,country} = req.body
+  if(!req.body.listing){
+    throw new ExpressError(400,"Invalid Listing Data");
+  }
 
-
-    if(!req.body.ExpressError){
-      throw new ExpressError(400,"Invalid Listing Data");
-    }
-
-    let listing = req.body.listing;
-    const newListing = new Listing(listing);
-    await newListing.save();
-    res.redirect("/listings")
+  if(!req.body.listing.title){
+    throw new ExpressError(400,"Invalid Listing Data");
+  }
+ if(!req.body.listing.location){
+    throw new ExpressError(400,"Invalid Listing Data");
+  }
+  if(!req.body.listing.country){
+    throw new ExpressError(400,"Invalid Listing Data");
+  }
+  let listing = req.body.listing;
+  const newListing = new Listing(listing);
+  await newListing.save();
+  res.redirect("/listings")
 }));
 
 //edit and update 
@@ -73,9 +79,7 @@ app.get("/listings/:id/edit", wrapAsync(async(req,res)=>{
 
 // update router
 app.put("/listings/:id" , wrapAsync(async(req,res)=>{
-
-  
-  if(!req.body.ExpressError){
+  if(!req.body.listing){
     throw new ExpressError(400,"Invalid Listing Data");
   }
   let {id} = req.params;
@@ -90,14 +94,17 @@ app.delete("/listings/:id" , wrapAsync( async(req,res)=>{
   res.redirect("/listings")
 }))
 
+
+// all routes check 
 app.all("*", (req, res, next) => {
   next(new ExpressError("Page Not Found", 404));
+
 }); 
 
 // Error handle middleware 
-app.use((err,req,res,next)=>{
-  let{statusCode=500 , message = "Something want wrong"} = err;
-  res.status(statusCode).send(message);
+app.use((err, req, res, next) => {
+  let { statusCode = 500, message = "Something went wrong" } = err;
+  res.status(statusCode).render("error.ejs" , {err});
 });
 
 
