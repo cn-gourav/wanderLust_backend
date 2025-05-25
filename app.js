@@ -14,6 +14,8 @@ const {listingSchema} = require("./schema.js");
 const Review = require("./models/review");
 const {reviewSchema} = require("./schema.js");
 
+const listingRouter = require("./routes/listing");
+
 // Middleware
 app.set("views",path.join(__dirname,"views"));
 app.set("view engine", "ejs");
@@ -33,23 +35,6 @@ async function main() {
 }
 
 
-// test router 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
-
-
-// vaildateListing middleware 
-const vaildateListing = (req, res, next) => {
-   let {error}=  listingSchema.validate(req.body); // Validate the listing data
-  if(error){
-    let errmsg = error.details.map((el) => el.message).join(", "); 
-    throw new ExpressError(400, errmsg); 
-  }else{
-    next();
-  }
-}
-
 // vaildateReview middleware
 const vaildateReview = (req, res, next) => {
   let {error} = reviewSchema.validate(req.body); // Validate the review data
@@ -61,69 +46,17 @@ const vaildateReview = (req, res, next) => {
   }
 }
 
+// test router 
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+});
 
 
 
-// All Router here !! 
-
-//Index route
-app.get("/listings", wrapAsync( async (req, res) => {   
-    const allListings = await Listing.find({});
-    res.render("listings/index", {allListings }); 
-}));
-
-// new form 
-app.get("/listings/new",(req,res)=>{
-  res.render("listings/new")
-})
-
-// show route 
-app.get("/listings/:id", wrapAsync(async(req,res)=>{
-  let {id} = req.params;
-  const listing = await Listing.findById(id).populate("reviews"); // Populate reviews for the listing
-  if (!listing) {
-    throw new ExpressError(404, "Listing not found");
-  }
-  res.render("listings/show.ejs", {listing});
-}));
-
-// Create Route 
-app.post("/listings",vaildateListing
-  ,wrapAsync(async(req,res)=>{
-  let listing = req.body.listing;
-  const newListing = new Listing(listing);
-  await newListing.save();
-  res.redirect("/listings")
-}));
-
-//edit and update 
-app.get("/listings/:id/edit", wrapAsync(async(req,res)=>{
-   let{id} = req.params;
-  const listing = await Listing.findById(id);
-  res.render("listings/edit" , {listing})
-}))
-
-
-// update router
-app.put("/listings/:id",vaildateListing
-   , wrapAsync(async(req,res)=>{
-  if(!req.body.listing){
-    throw new ExpressError(400,"Invalid Listing Data");
-  }
-  let {id} = req.params;
-  await Listing.findByIdAndUpdate(id,{...req.body.listing});
-  res.redirect(`/listings/${id}`)
-}))
-
-// delete route 
-app.delete("/listings/:id" , wrapAsync( async(req,res)=>{
-  let {id} = req.params;
-  let deleting = await Listing.findByIdAndDelete(id);
-  res.redirect("/listings")
-}))
 
 
 //review route
+
 // post route 
 app.post("/listings/:id/reviews",vaildateReview,
   wrapAsync(async(req,res)=>{
@@ -137,7 +70,7 @@ app.post("/listings/:id/reviews",vaildateReview,
 
 
 // delete review route
-app.delete("/listings/:id/reviews/:reviewId", wrapAsync(async(req,res)=>{
+app.delete("/lisitngs/:id/reviews/:reviewId", wrapAsync(async(req,res)=>{
   let{id, reviewId} = req.params;
   await Listing.findByIdAndUpdate(id, {$pull: {reviews: reviewId}}); // Remove review from listing
 
@@ -146,6 +79,11 @@ app.delete("/listings/:id/reviews/:reviewId", wrapAsync(async(req,res)=>{
 
   res.redirect(`/listings/${id}`);
 }))
+
+
+// All Router here !! 
+app.use("/listings", listingRouter);
+
  
 // all routes check 
 app.all("*", (req, res, next) => {
