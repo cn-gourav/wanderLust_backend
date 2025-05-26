@@ -8,17 +8,11 @@ const path = require("path");
 const methodOverride = require("method-override");
 const ejsmate = require("ejs-mate");
 const ExpressError = require("./utils/ExpressError");
+const session = require('express-session');
+const flash = require('connect-flash');
 
 const listings = require("./routes/listing");
 const reviews = require("./routes/review");
-
-// Middleware
-app.set("views",path.join(__dirname,"views"));
-app.set("view engine", "ejs");
-app.use(express.urlencoded({extended:true}));
-app.use(methodOverride("_method"))
-app.engine('ejs',ejsmate);
-app.use(express.static(path.join(__dirname,"/public"))) 
 
 
 // Connect to MongoDB
@@ -30,10 +24,38 @@ async function main() {
   await mongoose.connect(MONGO_URL);
 }
 
+
+// Middleware
+app.set("views",path.join(__dirname,"views"));
+app.set("view engine", "ejs");
+app.use(express.urlencoded({extended:true}));
+app.use(methodOverride("_method"))
+app.engine('ejs',ejsmate);
+app.use(express.static(path.join(__dirname,"/public"))) 
+
+const sessionOptions ={
+  secret: "mysecretkey",
+  resave: false,
+  saveUninitialized: true,
+  cookie:{
+    expires: Date.now()*7*24*60*60*1000, // 7 days
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds  
+    httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
+  }
+}
+
 // test router 
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
+
+app.use(session(sessionOptions));
+app.use(flash());
+
+app.use((req, res, next) => {
+  res.locals.success = req.flash("success");
+  next();
+})
 
 // All Router here !! 
 app.use("/listings", listings);

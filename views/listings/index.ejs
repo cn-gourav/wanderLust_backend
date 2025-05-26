@@ -1,12 +1,13 @@
 <% layout('/layout/bolierplate.ejs') %>
 
+
      <body>
           <h1>All Listings</h1>
           <!-- <form action="/listings/new" method="GET">
                <button> NEW FOrm</button>
           </form> -->
 
-          <div class="row row-cols-lg-4 row-cols-md-3 row-cols-sm-1">
+          <div class="row row-cols-lg-4 row-cols-md-3 row-cols-sm-1 col-6 offset-3">
                <% for(let listings of allListings) { %>
                     <a href="/listings/<%= listings.id %>" class="listing-link">
                          <div class="card col listing-card">

@@ -19,8 +19,6 @@ const vaildateListing = (req, res, next) => {
 }
 
 
-
-
 //Index route
 router.get("/", wrapAsync( async (req, res) => {   
     const allListings = await Listing.find({});
@@ -37,7 +35,8 @@ router.get("/:id", wrapAsync(async(req,res)=>{
   let {id} = req.params;
   const listing = await Listing.findById(id).populate("reviews"); // Populate reviews for the listing
   if (!listing) {
-    throw new ExpressError(404, "Listing not found");
+    req.flash("error", "Listing not found");
+    return res.redirect("/listings");
   }
   res.render("listings/show.ejs", {listing});
 }));
@@ -48,6 +47,7 @@ router.post("/",vaildateListing
   let listing = req.body.listing;
   const newListing = new Listing(listing);
   await newListing.save();
+  req.flash("success", "New Listing Created Successfully");
   res.redirect("/listings")
 }));
 
@@ -55,6 +55,11 @@ router.post("/",vaildateListing
 router.get("/:id/edit", wrapAsync(async(req,res)=>{
    let{id} = req.params;
   const listing = await Listing.findById(id);
+  if (!listing) {
+    req.flash("error", "Listing not found");
+    return res.redirect("/listings");
+  }
+  req.flash("success", "Edit Listing Successfully");
   res.render("listings/edit" , {listing})
 }))
 
@@ -67,6 +72,7 @@ router.put("/:id",vaildateListing
   }
   let {id} = req.params;
   await Listing.findByIdAndUpdate(id,{...req.body.listing});
+  req.flash("success", "Listing Updated Successfully");
   res.redirect(`/listings/${id}`)
 }))
 
@@ -74,6 +80,7 @@ router.put("/:id",vaildateListing
 router.delete("/:id" , wrapAsync( async(req,res)=>{
   let {id} = req.params;
   let deleting = await Listing.findByIdAndDelete(id);
+  req.flash("success", "Listing Deleted Successfully");
   res.redirect("/listings")
 }))
 

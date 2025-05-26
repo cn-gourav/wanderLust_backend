@@ -28,6 +28,8 @@ router.post("/",vaildateReview,
  listing.reviews.push(newReview);
  await newReview.save();
  await listing.save();
+  req.flash("success", "Review added successfully");
+    // Redirect to the listing page after adding the review
  res.redirect(`/listings/${listing._id}`); 
 }))
 
@@ -39,7 +41,7 @@ router.delete("/:reviewId", wrapAsync(async(req,res)=>{
 
   // Delete the review from the database
   await Review.findByIdAndDelete(reviewId)
-
+  req.flash("success", "Review deleted successfully");
   res.redirect(`/listings/${id}`);
 }))
 
