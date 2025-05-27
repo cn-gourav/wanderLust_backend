@@ -1,0 +1,34 @@
+<% layout("/layout/bolierplate") %>
+
+     <body>
+
+          <div class="row mt-3">
+               <div class="col-6 offset-3">
+                    <h1 class="mt-2 mb-4">Log in Wanderlust</h1>
+
+                    <form action="/login" method="post" class="needs-validation" novalidate>
+
+                         <!-- labal and input tittle -->
+                         <div class="mb-3">
+                              <label for="username" class="form-label">Username</label>
+                              <input class="form-control" type="text" name="username" id="username"
+                                   placeholder="enter username" required>
+                         </div>
+
+
+
+
+
+                         <!-- labal and input tittle -->
+                         <div class="mb-3">
+                              <label for="password" class="form-label">Password</label>
+                              <input class="form-control" type="text" name="password" id="password"
+                                   placeholder="enter password" required>
+                         </div>
+
+                         <button class="btn btn-success">login</button>
+
+                    </form>
+               </div>
+          </div>
+     </body>
