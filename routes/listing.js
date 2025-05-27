@@ -66,7 +66,7 @@ router.get("/:id/edit", wrapAsync(async(req,res)=>{
 
 // update routerr
 router.put("/:id",vaildateListing
-   , wrapAsync(async(req,res)=>{
+   , wrapAsync(async(req,res)=>{w
   if(!req.body.listing){
     throw new ExpressError(400,"Invalid Listing Data");
   }
