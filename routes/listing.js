@@ -5,6 +5,9 @@ const wrapAsync = require("../utils/wrapAsync");
 
 const {isLoggedIn, isOwner ,vaildateListing} = require("../middleware.js"); 
 const listingsController = require("../controllers/listings.js");
+const multer = require("multer");
+const { storage } = require("../cloudConfig.js"); // Import the storage configuration from cloudConfig.js
+const upload = multer({  storage }); // Set the destination for uploaded files
 
 //Index route
 router.get("/", 
@@ -14,7 +17,8 @@ router.get("/",
 // new form 
 router.get("/new",
   isLoggedIn,
-  listingsController.renderNewForm);
+  listingsController.
+  renderNewForm);
 
 
 // show router 
@@ -25,8 +29,10 @@ router.get("/:id",
 // Create router 
 router.post("/",
   isLoggedIn,
-  vaildateListing
-  ,wrapAsync(listingsController.createListing));
+  upload.single('listing[image]'), // Use multer to handle file upload()
+  vaildateListing,
+  wrapAsync(listingsController.createListing)
+);
 
 
 //edit and update 

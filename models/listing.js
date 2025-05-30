@@ -11,20 +11,8 @@ const ListingSchema = new Schema({
     type: String,
   },
   image: {
-    //     type: String,
-    //     default:
-    //       "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/1200px-No_image_available.svg.png",
-    //     set: (v) =>
-    //       v === ""
-    //    ? "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/1200px-No_image_available.svg.png"
-    //         : v,
-    //   },
-    filename: {
-      type: String,
-    },
-    url: {
-      type: String,
-    },
+    url: String,
+    filename: String,
   },
   price: {
     type: Number,

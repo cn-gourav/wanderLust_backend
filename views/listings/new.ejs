@@ -7,7 +7,7 @@
 
                <!-- form-section  -->
 
-               <form action="/listings" method="POST" novalidate class="needs-validation">
+               <form action="/listings" method="POST" novalidate class="needs-validation" enctype="multipart/form-data">
 
                     <!-- labal and input tittle -->
                     <div class="mb-3">
@@ -38,8 +38,8 @@
 
                     <!-- label input for image  -->
                     <div class="mb-3">
-                         <label for="image" class="form-label">Image link</label>
-                         <input class="form-control" type="text" placeholder="img url/link" name="listing[image]">
+                         <label for="image" class="form-label">Upload Image</label>
+                         <input class="form-control" type="file" name="listing[image]">
                     </div>
 
 
