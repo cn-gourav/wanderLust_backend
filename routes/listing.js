@@ -45,6 +45,7 @@ router.get("/:id/edit",
 router.put("/:id",
   isLoggedIn,
   isOwner,
+  upload.single('listing[image]'), // Use multer to handle file upload
   vaildateListing, 
    wrapAsync(listingsController.updateListing));
 
