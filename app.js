@@ -53,11 +53,6 @@ const sessionOptions ={
 }
 
 
-// test router 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
-
 //session and flash middleware
 app.use(session(sessionOptions));
 app.use(flash());
