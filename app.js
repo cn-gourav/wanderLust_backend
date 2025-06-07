@@ -10,6 +10,7 @@ const methodOverride = require("method-override");
 const ejsmate = require("ejs-mate");
 const ExpressError = require("./utils/ExpressError");
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const flash = require('connect-flash');
 const passport = require("passport");
 const LocalStrategy = require("passport-local")
@@ -21,6 +22,7 @@ const User = require("./models/user");
 const listingsRouter = require("./routes/listing");
 const reviewsRouter = require("./routes/review");
 const userRouter = require("./routes/user");
+const { error } = require("console");
 
 
 // Connect to MongoDB
@@ -42,16 +44,30 @@ app.use(methodOverride("_method"))
 app.engine('ejs',ejsmate);
 app.use(express.static(path.join(__dirname,"/public"))) 
 
+const store = MongoStore.create({
+  mongoUrl: dburl,
+  crypto: {
+    secret: "mysecretkey"
+  },
+  touchAfter: 24 * 3600,
+})
+
+store.on("error" , (err)=>{
+  console.log("Error in MONGO Store" , err)
+})
+
 const sessionOptions ={
+  store,
   secret: "mysecretkey",
   resave: false,
   saveUninitialized: true,
   cookie:{
-    expires: Date.now()*7*24*60*60*1000, // 7 days
+    expires: Date.now() + 7*24*60*60*1000, // 7 days
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds  
     httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
   }
 }
+
 
 
 //session and flash middleware
@@ -75,30 +91,11 @@ app.use((req, res, next) => {
 })
 
 
-// app.get("/demouser", async(req, res) => {
-//     let fakeUser = new User({
-//       username: "emoUser",
-//       email: "demo@gmail.com"
-//     });
-//     let registeredUser = await User.register(fakeUser, "1234")
-//     res.send(registeredUser)
-// })
-
-
-
-
-
-
 // All Router here !! 
 app.use("/listings", listingsRouter);
 app.use("/listings/:id/reviews", reviewsRouter)
 app.use("/", userRouter); 
  
-
-
-
-
-
 
 // all routes check 
 app.all("*", (req, res, next) => {
